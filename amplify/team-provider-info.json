@@ -1,0 +1,23 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-nukumoriapp-dev-543c5-authRole",
+      "UnauthRoleArn": "arn:aws:iam::946502786550:role/amplify-nukumoriapp-dev-543c5-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::946502786550:role/amplify-nukumoriapp-dev-543c5-authRole",
+      "Region": "ap-northeast-1",
+      "DeploymentBucketName": "amplify-nukumoriapp-dev-543c5-deployment",
+      "UnauthRoleName": "amplify-nukumoriapp-dev-543c5-unauthRole",
+      "StackName": "amplify-nukumoriapp-dev-543c5",
+      "StackId": "arn:aws:cloudformation:ap-northeast-1:946502786550:stack/amplify-nukumoriapp-dev-543c5/7f595f80-5181-11f0-986f-0a3d2516e33d",
+      "AmplifyAppId": "dp6jhus6vjczz"
+    },
+    "categories": {
+      "auth": {
+        "nukumoriapp409707e2": {}
+      },
+      "api": {
+        "nukumoriapp": {}
+      }
+    }
+  }
+}

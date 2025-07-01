@@ -1,0 +1,12 @@
+
+type UserProfile @model @auth(rules: [{ allow: owner }]) {
+  user_id: ID!           # Cognitoのsubと紐づけ
+  user_name: String!
+  bio: String
+  hobbies: [String]
+  mbti: String
+  favorite_foods: [String]
+  disliked_foods: [String]
+  location: String
+  updated_at: AWSDateTime
+}

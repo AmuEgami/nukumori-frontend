@@ -1,0 +1,16 @@
+{
+  "posts": [
+    {
+      "post_id": "p001",
+      "user_name": "うさぎさん",
+      "content": "今日もがんばったね〜",
+      "created_at": "2025-06-16T15:00:00Z"
+    },
+    {
+      "post_id": "p002",
+      "user_name": "ねこさん",
+      "content": "明日はやすみたい…",
+      "created_at": "2025-06-16T16:20:00Z"
+    }
+  ]
+}
