@@ -14,6 +14,7 @@ function Home() {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
   const [message, setMessage] = useState('');
+  const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const today = new Date().getDay();
@@ -23,7 +24,7 @@ function Home() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch('http://localhost:8080/posts');
+        const response = await fetch(`${API_URL}/posts`);
         const data = await response.json();
         setPosts(data);
       } catch (error) {
@@ -32,40 +33,37 @@ function Home() {
     };
 
     fetchPosts();
-  }, []);
+  }, [API_URL]);
 
   const handleSubmit = async () => {
-  if (newPost.trim() === '') return;
+    if (newPost.trim() === '') return;
 
-  const newEntry = {
-    userName: 'うさぎさん',
-    content: newPost,
-    // createdAt は送らない！
-  };
+    const newEntry = {
+      userName: 'うさぎさん',
+      content: newPost,
+    };
 
-  try {
-    const response = await fetch('http://localhost:8080/posts', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newEntry),
-    });
+    try {
+      const response = await fetch(`${API_URL}/posts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newEntry),
+      });
 
-    if (!response.ok) {
-      throw new Error('投稿に失敗しました');
+      if (!response.ok) {
+        throw new Error('投稿に失敗しました');
+      }
+
+      const savedPost = await response.json();
+      setPosts([savedPost, ...posts]);
+      setNewPost('');
+    } catch (error) {
+      console.error('エラー:', error);
+      alert('投稿できませんでした😢');
     }
-
-    const savedPost = await response.json(); // ← Javaから返ってきた投稿（createdAt入り）
-
-    setPosts([savedPost, ...posts]);
-    setNewPost('');
-  } catch (error) {
-    console.error('エラー:', error);
-    alert('投稿できませんでした😢');
-  }
-};
-
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-white relative">
