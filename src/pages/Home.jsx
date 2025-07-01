@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // ← 追加！
 
 const weekdayMessages = {
   0: '今日は日曜日。しっかり休んでね☀️明日から頑張ろー！',
@@ -15,10 +16,13 @@ function Home() {
   const [newPost, setNewPost] = useState('');
   const [message, setMessage] = useState('');
   const API_URL = process.env.REACT_APP_API_URL;
+  const navigate = useNavigate(); // ← 追加！
 
   useEffect(() => {
     const today = new Date().getDay();
     setMessage(weekdayMessages[today]);
+
+    console.log('API URL:', process.env.REACT_APP_API_URL);
   }, []);
 
   useEffect(() => {
@@ -124,7 +128,12 @@ function Home() {
         <img src="/icons/search.png" alt="検索" className="w-8 h-8" />
         <img src="/icons/plus.png" alt="投稿" className="w-8 h-8" />
         <img src="/icons/bell.png" alt="通知" className="w-8 h-8" />
-        <img src="/icons/user.png" alt="プロフィール" className="w-8 h-8" />
+        <img
+          src="/icons/user.png"
+          alt="プロフィール"
+          className="w-8 h-8 cursor-pointer"
+          onClick={() => navigate('/setup')} // ← 遷移処理
+        />
       </div>
     </div>
   );
