@@ -1,11 +1,22 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Amplify } from 'aws-amplify';
 import awsExports from '../aws-exports';
-import { Auth } from 'aws-amplify';
 import '@aws-amplify/ui-react/styles.css';
+import {
+  CognitoUserPool,
+  CognitoUser,
+  AuthenticationDetails,
+} from 'amazon-cognito-identity-js';
 
-Amplify.configure(awsExports);
+
+const poolData = {
+  UserPoolId: 'ap-northeast-1_aA4DL452b',
+  ClientId: process.env.REACT_APP_COGNITO_CLIENT_ID,
+};
+
+console.log('CLIENT_ID:', process.env.REACT_APP_COGNITO_CLIENT_ID);
+
+const userPool = new CognitoUserPool(poolData);
 
 function Login() {
   const navigate = useNavigate();
@@ -13,14 +24,33 @@ function Login() {
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
-  const handleLogin = async () => {
-    try {
-      await Auth.signIn(email, password);
-      navigate('/home');
-    } catch (error) {
-      console.error('ログイン失敗:', error);
-      setErrorMsg('ログインに失敗しました。メールアドレスとパスワードを確認してください。');
-    }
+  const handleLogin = () => {
+    const authenticationDetails = new AuthenticationDetails({
+      Username: email,
+      Password: password,
+    });
+
+    const cognitoUser = new CognitoUser({
+      Username: email,
+      Pool: userPool,
+    });
+
+    cognitoUser.authenticateUser(authenticationDetails, {
+      onSuccess: (result) => {
+        console.log('ログイン成功:', result);
+        navigate('/home');
+      },
+      onFailure: (err) => {
+        console.error('ログイン失敗:', err);
+        if (err.code === 'UserNotFoundException') {
+          setErrorMsg('登録されていないユーザーです。');
+        } else if (err.code === 'NotAuthorizedException') {
+          setErrorMsg('パスワードが間違っています。');
+        } else {
+          setErrorMsg('ログインに失敗しました。');
+        }
+      },
+    });
   };
 
   return (

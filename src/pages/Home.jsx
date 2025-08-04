@@ -92,7 +92,7 @@ function Home() {
               <img src={post.avatar || '/default-avatar.png'} alt="avatar" className="w-10 h-10 rounded-full" />
               <div className="font-light">{post.userName}</div>
             </div>
-            <p className="mt-2 text-gray-700">{post.content}</p>
+            <p className="mt-2 text-gray-700 whitespace-pre-wrap">{post.content}</p>
             <div className="flex items-center gap-4 mt-3 text-pink-300 text-xl">
               <span>♡</span>
               <span className="text-gray-400">💬</span>
