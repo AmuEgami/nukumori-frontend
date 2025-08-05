@@ -1,20 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import awsExports from '../aws-exports';
-import '@aws-amplify/ui-react/styles.css';
 import {
   CognitoUserPool,
   CognitoUser,
   AuthenticationDetails,
 } from 'amazon-cognito-identity-js';
 
-
 const poolData = {
   UserPoolId: 'ap-northeast-1_aA4DL452b',
   ClientId: process.env.REACT_APP_COGNITO_CLIENT_ID,
 };
-
-console.log('CLIENT_ID:', process.env.REACT_APP_COGNITO_CLIENT_ID);
 
 const userPool = new CognitoUserPool(poolData);
 
@@ -38,7 +33,28 @@ function Login() {
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: (result) => {
         console.log('ログイン成功:', result);
-        navigate('/home');
+        const idToken = result.getIdToken().decodePayload();
+        const userId = idToken.sub;
+
+        // プロフィールの存在チェック
+        fetch(`http://localhost:8080/api/profile/${userId}`)
+          .then((res) => {
+            if (res.status === 404) {
+              // プロフィール未登録→プロフィール登録画面へ
+              navigate('/setup');
+
+            } else if (res.ok) {
+              // プロフィール登録済み→ホームへ
+              navigate('/home');
+            } else {
+              console.error('プロフィール取得に失敗しました');
+              setErrorMsg('ログイン後の処理でエラーが発生しました');
+            }
+          })
+          .catch((err) => {
+            console.error('プロフィール確認エラー:', err);
+            setErrorMsg('ログイン後の通信に失敗しました');
+          });
       },
       onFailure: (err) => {
         console.error('ログイン失敗:', err);
@@ -59,12 +75,10 @@ function Login() {
       style={{ backgroundImage: "url('/login.png')" }}
     >
       <div className="flex flex-col items-center w-full max-w-md px-6 sm:px-4">
-        {/* ロゴ */}
         <h1 className="text-white text-3xl font-bold tracking-wide mb-6 drop-shadow">
           nukumori
         </h1>
 
-        {/* ログインフォーム */}
         <div className="bg-white/80 backdrop-blur-md p-8 rounded-3xl shadow-md w-full">
           <h2 className="text-xl font-bold mb-6 text-center tracking-wide">ログイン</h2>
 
@@ -92,7 +106,10 @@ function Login() {
 
           {errorMsg && <p className="text-red-500 text-sm mb-4">{errorMsg}</p>}
 
-          <button onClick={handleLogin} className="w-full py-2 rounded-full bg-gray-400 text-white font-semibold hover:bg-gray-500 transition">
+          <button
+            onClick={handleLogin}
+            className="w-full py-2 rounded-full bg-gray-400 text-white font-semibold hover:bg-gray-500 transition"
+          >
             ログイン
           </button>
 

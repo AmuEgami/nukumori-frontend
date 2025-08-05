@@ -3,10 +3,10 @@ import {
   CognitoUserPool,
   CognitoUser
 } from "amazon-cognito-identity-js";
-import { Link } from "react-router-dom"; // React Routerを使用している場合
+import { Link } from "react-router-dom";
 
 const poolData = {
-  UserPoolId: "ap-northeast-1_XXXXXXX", // ← あなたの UserPoolId に変更
+  UserPoolId: "ap-northeast-1_aA4DL452b",
   ClientId: "54t90vuctd51vubi0sqft6jvko"
 };
 

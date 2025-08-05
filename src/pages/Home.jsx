@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // ← 追加！
+import { useNavigate } from 'react-router-dom';
+import { CognitoUserPool } from 'amazon-cognito-identity-js';
+
+const poolData = {
+  UserPoolId: 'ap-northeast-1_aA4DL452b',
+  ClientId: '54t90vuctd51vubi0sqft6jvko',
+};
+
+const userPool = new CognitoUserPool(poolData);
 
 const weekdayMessages = {
   0: '今日は日曜日。しっかり休んでね☀️明日から頑張ろー！',
-  1: 'みなさん！今日もお疲れ様です！\n月曜日から出勤ほんときついね…\n今日も生きててえらい！',
-  2: '火曜日だね〜今週まだまだあるけど、休憩しつつ頑張ろう！！',
-  3: '水曜の折り返し地点。あと半分だよ💪',
-  4: '木曜まできたあなた、えらい！',
-  5: '今日は華金！あとちょっとでおやすみ〜🌸\nここまでマジでよく頑張った！！\nいつもありがとね〜！❤️',
+  1: 'みなさん！今日もお疲れ様です！\n今日からまた一週間頑張りましょう！',
+  2: '火曜日ですね〜今週まだまだありますが、休憩しつつ頑張りましょう！！',
+  3: '水曜の折り返し地点。今週もあと半分ですね💪',
+  4: '木曜まで頑張ったあなた、えらいです！あと二日頑張りましょう！',
+  5: '今日は華金！あとちょっとでおやすみ〜🌸\nここまでほんとによく頑張った！！',
   6: '土曜日、ちゃんと休めてる？自分にやさしくね🫶',
 };
 
@@ -15,15 +23,41 @@ function Home() {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
   const [message, setMessage] = useState('');
+  const [userName, setUserName] = useState(''); 
   const API_URL = process.env.REACT_APP_API_URL;
-  const navigate = useNavigate(); // ← 追加！
+  const navigate = useNavigate();
 
   useEffect(() => {
     const today = new Date().getDay();
     setMessage(weekdayMessages[today]);
-
-    console.log('API URL:', process.env.REACT_APP_API_URL);
   }, []);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const currentUser = userPool.getCurrentUser();
+      if (!currentUser) return;
+
+      currentUser.getSession(async (err, session) => {
+        if (err) return console.error('セッションエラー', err);
+        const idToken = session.getIdToken();
+        const userId = idToken.decodePayload().sub;
+
+        try {
+          const res = await fetch(`${API_URL}/api/profile/${userId}`);
+          if (res.ok) {
+            const data = await res.json();
+            setUserName(data.userName);
+          } else {
+            console.error("プロフィール取得失敗");
+          }
+        } catch (e) {
+          console.error("プロフィール取得エラー", e);
+        }
+      });
+    };
+
+    fetchProfile();
+  }, [API_URL]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -43,7 +77,7 @@ function Home() {
     if (newPost.trim() === '') return;
 
     const newEntry = {
-      userName: 'うさぎさん',
+      userName: userName || '名無しのうさぎさん', // ← プロフィールがなければ仮名
       content: newPost,
     };
 
@@ -56,9 +90,7 @@ function Home() {
         body: JSON.stringify(newEntry),
       });
 
-      if (!response.ok) {
-        throw new Error('投稿に失敗しました');
-      }
+      if (!response.ok) throw new Error('投稿に失敗しました');
 
       const savedPost = await response.json();
       setPosts([savedPost, ...posts]);
@@ -132,7 +164,7 @@ function Home() {
           src="/icons/user.png"
           alt="プロフィール"
           className="w-8 h-8 cursor-pointer"
-          onClick={() => navigate('/setup')} // ← 遷移処理
+          onClick={() => navigate('/profile')}
         />
       </div>
     </div>
