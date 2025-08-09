@@ -47,9 +47,17 @@ function ProfileSetup() {
         updatedAt: new Date().toISOString(),
         birthday: profile?.birthday || "1990-01-01"
       };
+      const API_URL = process.env.REACT_APP_API_URL;
+
+      console.log(payload)
+      console.log("送信するpayload:");
+      console.log(JSON.stringify(payload, null, 2));
+      console.log("送信先URL:", `${API_URL}/api/profile`);
+
 
       try {
-        const res = await fetch('http://localhost:8080/api/profile', {
+        console.log(API_URL) 
+        const res = await fetch(`${API_URL}/api/profile`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
@@ -66,6 +74,16 @@ function ProfileSetup() {
           }
         } else {
           console.error("プロフィール保存失敗");
+  console.error("ステータス:", res.status);
+
+  const contentType = res.headers.get('content-type');
+  if (contentType && contentType.includes('application/json')) {
+    const errorJson = await res.json();
+    console.error("エラー詳細(JSON):", errorJson);
+  } else {
+    const errorText = await res.text();
+    console.error("エラー詳細(text):", errorText);
+  }
         }
       } catch (err) {
         console.error("通信エラー:", err);
@@ -87,10 +105,12 @@ function ProfileSetup() {
           <Input label="好きな食べ物" value={favoriteFoods} setValue={setFavoriteFoods} placeholder="例: ラーメン, いちご" />
           <Input label="苦手な食べ物" value={dislikedFoods} setValue={setDislikedFoods} placeholder="例: ピーマン" />
           <Input label="地域" value={locationValue} setValue={setLocationValue} placeholder="例: 神奈川" />
-          <div>
-            <label className="block mb-1 font-medium">アバター画像（任意）</label>
-            <input type="file" accept="image/*" onChange={(e) => setAvatar(e.target.files[0])} className="w-full" />
-          </div>
+          {/*
+<div>
+  <label className="block mb-1 font-medium">アバター画像（任意）</label>
+  <input type="file" accept="image/*" onChange={(e) => setAvatar(e.target.files[0])} className="w-full" />
+</div>
+*/}
           <button
             type="submit"
             className="w-full py-2 rounded-full bg-sky-500 text-white font-semibold hover:bg-sky-600 transition"

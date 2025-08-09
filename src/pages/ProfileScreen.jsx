@@ -30,9 +30,11 @@ function ProfileScreen() {
 
         const idTokenPayload = session.getIdToken().decodePayload();
         const userId = idTokenPayload.sub;
+        const API_URL = process.env.REACT_APP_API_URL || 'https://nukumori-app.com';
+
 
         try {
-          const res = await fetch(`http://localhost:8080/api/profile/${userId}`);
+          const res = await fetch(`${API_URL}/api/profile/${userId}`);
           if (res.ok) {
             const data = await res.json();
             setProfile(data);

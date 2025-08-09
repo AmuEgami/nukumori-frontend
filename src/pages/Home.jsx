@@ -62,7 +62,7 @@ function Home() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch(`${API_URL}/posts`);
+        const response = await fetch(`${API_URL}/api/posts`);
         const data = await response.json();
         setPosts(data);
       } catch (error) {
@@ -82,7 +82,7 @@ function Home() {
     };
 
     try {
-      const response = await fetch(`${API_URL}/posts`, {
+      const response = await fetch(`${API_URL}/api/posts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

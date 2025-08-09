@@ -43,3 +43,9 @@ amplifytools.xcconfig
 **.sample
 #amplify-do-not-edit-end
 .env
+src/aws-exports.js
+db.json
+
+AWSCLIV2.pkg
+mutations.js
+queries.js

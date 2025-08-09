@@ -30,14 +30,18 @@ function Login() {
       Pool: userPool,
     });
 
+    const API_URL = process.env.REACT_APP_API_URL || 'https://nukumori-app.com';
+
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: (result) => {
         console.log('ログイン成功:', result);
         const idToken = result.getIdToken().decodePayload();
         const userId = idToken.sub;
 
+        console.log("userId:", userId);
+
         // プロフィールの存在チェック
-        fetch(`http://localhost:8080/api/profile/${userId}`)
+        fetch(`${API_URL}/api/profile/${userId}`)
           .then((res) => {
             if (res.status === 404) {
               // プロフィール未登録→プロフィール登録画面へ
@@ -74,6 +78,16 @@ function Login() {
       className="flex justify-center items-center min-h-screen bg-cover bg-top bg-no-repeat sm:bg-top bg-right-mobile"
       style={{ backgroundImage: "url('/login.png')" }}
     >
+
+      {/* ← 戻るボタン */}
+    <div className="absolute top-4 left-4">
+      <button
+        onClick={() => navigate('/')}
+        className="text-white underline text-sm"
+      >
+        戻る
+      </button>
+    </div>
       <div className="flex flex-col items-center w-full max-w-md px-6 sm:px-4">
         <h1 className="text-white text-3xl font-bold tracking-wide mb-6 drop-shadow">
           nukumori
